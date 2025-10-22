@@ -83,6 +83,12 @@ class LDAPDeleteException(LDAPServerException):
 		message = 'LDAP Delete operation failed on DN %s! Result code: "%s" Reason: "%s"' % (self.dn, resultcode, diagnostic_message)
 		super().__init__(resultcode, diagnostic_message, message)
 
+class LDAPModifyDNException(LDAPServerException):
+	def __init__(self, dn, resultcode, diagnostic_message):
+		self.dn = dn
+		message = 'LDAP ModifyDN operation failed on DN %s! Result code: "%s" Reason: "%s"' % (self.dn, resultcode, diagnostic_message)
+		super().__init__(resultcode, diagnostic_message, message)
+
 
 def format_ad_ldap_error(diag_raw: bytes, resultcode: str, dn: str = None) -> str:
 	diag_msg = diag_raw.decode('utf-8', errors='ignore')

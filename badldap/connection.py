@@ -9,7 +9,7 @@ from badldap.protocol.messages import LDAPMessage, BindRequest, \
 	protocolOp, AuthenticationChoice, SaslCredentials, \
 	SearchRequest, AttributeDescription, Filter, Filters, \
 	Controls, Control, SearchControlValue, AddRequest, \
-	ModifyRequest, DelRequest, ExtendedRequest, ExtendedResponse
+	ModifyRequest, DelRequest, ModifyDNRequest, ExtendedRequest, ExtendedResponse
 
 from badldap.protocol.utils import calcualte_length
 from badldap.protocol.typeconversion import convert_result, convert_attributes, encode_attributes, encode_changes
@@ -17,7 +17,7 @@ from badldap.protocol.query import escape_filter_chars, query_syntax_converter
 from badldap.commons.authbuilder import get_auth_context
 from badldap.network.packetizer import LDAPPacketizer
 from asysocks.unicomm.common.target import UniProto
-from badldap.commons.exceptions import LDAPBindException, LDAPAddException, LDAPModifyException, LDAPDeleteException, LDAPSearchException
+from badldap.commons.exceptions import LDAPBindException, LDAPAddException, LDAPModifyException, LDAPDeleteException, LDAPModifyDNException, LDAPSearchException
 from hashlib import sha256
 from asysocks.unicomm.client import UniClient
 from badauth.common.constants import asyauthProtocol
@@ -676,6 +676,53 @@ class MSLDAPClientConnection:
 				if msg_type == 'delResponse':
 					if message['protocolOp']['resultCode'] != 'success':
 						return False, LDAPDeleteException(
+							entry,
+							message['protocolOp']['resultCode'],
+							message['protocolOp']['diagnosticMessage']
+						)
+
+			return True, None
+		except Exception as e:
+			return False, e
+
+	async def modify_dn(self, entry:str, newrdn:str, deleteoldrdn:bool = True, newSuperior:str = None):
+		"""
+		Performs the modify DN operation.
+		
+		:param entry: The DN of the object to be renamed/moved
+		:type entry: str
+		:param newrdn: The new RDN (relative distinguished name) for the entry
+		:type newrdn: str
+		:param deleteoldrdn: Whether to delete the old RDN value from the entry. Default: True
+		:type deleteoldrdn: bool
+		:param newSuperior: Optional new parent DN if moving the entry to a new location
+		:type newSuperior: str
+		:return: A tuple of (True, None) on success or (False, Exception) on error. 
+		:rtype: (:class:`bool`, :class:`Exception`)
+		"""
+		try:
+			req = {
+				'entry': entry.encode(),
+				'newrdn': newrdn.encode(),
+				'deleteoldrdn': deleteoldrdn,
+			}
+			if newSuperior is not None:
+				req['newSuperior'] = newSuperior.encode()
+			
+			br = { 'modDNRequest' : ModifyDNRequest(req)}
+			msg = { 'protocolOp' : protocolOp(br)}
+			
+			msg_id = await self.send_message(msg)
+			results = await self.recv_message(msg_id)
+			if isinstance(results[0], Exception):
+				return False, results[0]
+			
+			for message in results:
+				msg_type = message['protocolOp'].name
+				message = message.native
+				if msg_type == 'modDNResponse':
+					if message['protocolOp']['resultCode'] != 'success':
+						return False, LDAPModifyDNException(
 							entry,
 							message['protocolOp']['resultCode'],
 							message['protocolOp']['diagnosticMessage']
