@@ -1,5 +1,5 @@
 
-__version__ = "0.6.7"
+__version__ = "0.7.0"
 __banner__ = \
 """
 # badldap %s 
