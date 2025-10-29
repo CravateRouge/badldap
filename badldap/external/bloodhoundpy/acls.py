@@ -289,7 +289,7 @@ def ace_applies(ace_guid, object_class, objecttype_guid_map):
     If this is not set, the ACE applies to all object types.
     '''
     if object_class not in objecttype_guid_map:
-        print('debug: ace_applies: object_class not in objecttype_guid_map: %s' % object_class)
+        #print('debug: ace_applies: object_class not in objecttype_guid_map: %s' % object_class)
         return False
     if ace_guid == objecttype_guid_map[object_class]:
         return True

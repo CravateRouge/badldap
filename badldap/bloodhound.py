@@ -425,7 +425,7 @@ class MSLDAPDump2Bloodhound:
 			if is_filtered_container_child(tdn):
 				continue
 			if tdn not in self.DNs:
-				attrs, err = await self.connection.dnattrs(tdn, ['distinguishedName','objectGUID', 'objectClass','sAMAaccountType', 'sAMAccountName', 'objectSid', 'name'])
+				attrs, err = await self.connection.dnattrs(tdn, ['distinguishedName','objectGUID', 'objectClass','sAMAccountType', 'sAMAccountName', 'objectSid', 'name'])
 				if err is not None:
 					raise err
 				if attrs is None or len(attrs) == 0:
@@ -504,16 +504,17 @@ class MSLDAPDump2Bloodhound:
 		dn = entry.get('distinguishedName', '')
 		resolved['objectid'] = entry.get('objectSid', '')
 		resolved['principal'] = ('%s@%s' % (account, self.domainname)).upper()
-		if 'sAMAaccountName' in entry:
-			accountType = entry['sAMAccountType']
-			object_class = entry['objectClass']
-			if accountType in [268435456, 268435457, 536870912, 536870913]:
+		if account:
+			accountType = entry.get('sAMAccountType')
+			# Useful for deleted objects which lost their sAMAccountType
+			object_class = entry.get('objectClass', [])
+			if accountType in [268435456, 268435457, 536870912, 536870913] or 'group' in object_class:
 				resolved['type'] = 'Group'
 			elif accountType in [805306368] or \
 				 'msDS-GroupManagedServiceAccount' in object_class or \
-				 'msDS-ManagedServiceAccount' in object_class:
+				 'msDS-ManagedServiceAccount' in object_class or 'person' in object_class:
 				resolved['type'] = 'User'
-			elif accountType in [805306369]:
+			elif accountType in [805306369] or 'computer' in object_class:
 				resolved['type'] = 'Computer'
 				short_name = account.rstrip('$')
 				resolved['principal'] = ('%s.%s' % (short_name, self.domainname)).upper()
