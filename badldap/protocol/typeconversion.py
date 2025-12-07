@@ -418,7 +418,7 @@ MSLDAP_BUILTIN_ATTRIBUTE_TYPES_ENC = {
 	'nTSecurityDescriptor' : single_bytes,
 	#'msPKI-Certificate-Name-Flag' : single_int,
 	"msDS-DelegatedMSAState" : single_int,
-	"msDS-ManagedAccountPrecededByLink" : single_str,
+	"msDS-ManagedAccountPrecededByLink" : multi_str,
 	"msDS-ManagedPasswordInterval" : single_int,
 	"msDS-SupportedEncryptionTypes" : single_int,
 	"msDS-GroupMSAMembership" : single_sd,
