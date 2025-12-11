@@ -53,7 +53,7 @@ setup(
 	install_requires=[
 		'unicrypto>=0.0.10',
 		'badauth>=0.1.4',
-		'asysocks>=0.2.17',
+		'asysocks>=0.2.18',
 		'asn1crypto>=1.3.0',
 		'winacl>=0.1.8',
 		'prompt-toolkit>=3.0.2',
