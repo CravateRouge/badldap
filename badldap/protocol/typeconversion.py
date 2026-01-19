@@ -1291,6 +1291,7 @@ LDAP_WELL_KNOWN_ATTRS = {
 	"msDS-SPNSuffixes" : multi_str,
 	"msDS-StrongNTLMPolicy" : single_int,
 	"msDS-SupersededManagedAccountLink": multi_str,
+	"msDS-SupersededServiceAccountState": single_int,
 	"msDS-SupportedEncryptionTypes" : single_int,
 	"msDS-SyncServerUrl" : multi_str,
 	"msDS-TasksForAzRole" : multi_str,
