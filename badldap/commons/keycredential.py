@@ -40,8 +40,10 @@ class KeyCredential:
         self.__usage = (0x4, pack("<B", 0x01))
         self.__source = (0x5, pack("<B", 0x0))
         self.__deviceId = (0x6, deviceId)
-        self.__customKeyInfo = (0x7, pack("<BB", 0x1, 0x0))
-        self.__lastLogonTime = (0x8, pack("<Q", currentTime))
+        # CustomKeyInfo with flag 0x2 "MFA Not Required" needed for computer self-shadowcreds and lastLogonTime needs to be unset
+        # See: https://mastodon.social/@RedTeamPentesting/115984144448993541
+        self.__customKeyInfo = (0x7, pack("<BB", 0x1, 0x2))
+        #self.__lastLogonTime = (0x8, pack("<Q", currentTime))
         self.__creationTime = (0x9, pack("<Q", currentTime))
         
 
@@ -136,13 +138,13 @@ class KeyCredential:
                                           self.__source,
                                           self.__deviceId,
                                           self.__customKeyInfo,
-                                          self.__lastLogonTime,
+                                          #self.__lastLogonTime,
                                           self.__creationTime,
                                           ])
 
         return version + binaryData + binaryProperties
     
-    def to_pfx(self, password, path_to_file):
+    def to_pfx(self, path_to_file, password=""):
         if len(os.path.dirname(path_to_file)) != 0:
             if not os.path.exists(os.path.dirname(path_to_file)):
                 os.makedirs(os.path.dirname(path_to_file), exist_ok=True)
@@ -153,13 +155,13 @@ class KeyCredential:
         with open(path_to_file + ".pfx", "wb") as f:
             f.write(pfx_data)
 
-    def to_pfx_data(self, password):
+    def to_pfx_data(self, password=""):
         return serialize_key_and_certificates(
             name=b"",
             key=self.key,
             cert=self.certificate,
             cas=None,
-            encryption_algorithm=serialization.BestAvailableEncryption(password.encode())
+            encryption_algorithm=serialization.BestAvailableEncryption(password.encode()) if password else serialization.NoEncryption()
         )
 
     @staticmethod
