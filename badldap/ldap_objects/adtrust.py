@@ -72,6 +72,15 @@ BH_TRUST_DIR_NAMING = {
 }
 
 
+def TrustAttributesToType(trustAttributes: TrustAttributes):
+	bh_trustType = ""
+	if TrustAttributes.WITHIN_FOREST in trustAttributes:
+		bh_trustType = 'ParentChild'
+	elif TrustAttributes.FOREST_TRANSITIVE in TrustAttributes:
+		bh_trustType = 'Forest'
+	else:
+		bh_trustType = 'External'
+	return bh_trustType
 
 class MSADDomainTrust:
 	def __init__(self):
@@ -194,8 +203,9 @@ class MSADDomainTrust:
 			"TargetDomainName": dname,
 			"TargetDomainSid": str(self.securityIdentifier),
 			"IsTransitive": is_transitive,
-			"TrustDirection": self.trustDirection.value,
-			"TrustType": self.trustType.value,
+			"TrustDirection": BH_TRUST_DIR_NAMING[self.trustDirection],
+			# BH TrustType is not AD DS TrustType! 
+			"TrustType": TrustAttributesToType(tat),
 			"SidFilteringEnabled": sid_filtering
 		}
 		
