@@ -485,12 +485,13 @@ def encode_changes(x, encode=True):
 						raise TypeError(f"{k} takes only one value but multiple values have been given.")
 					else:
 						value = value[0]
-				# If encoding is disabled then call the "bytes" encoder 
-				if not encode and splitted_name[1] != ["bytes"]:
-					if splitted_name[0] == "single":
-						encoder = single_bytes
-					else:
-						encoder = multi_bytes
+				# If encoding is disabled, always send the value as raw bytes,
+				# regardless of the attribute's declared type. The resolved encoder
+				# may be a decoder whose name has no "_" (e.g. bytes2timedelta for
+				# pKIExpirationPeriod), which would otherwise IndexError on
+				# splitted_name[1], and comparing a str to ["bytes"] was always True.
+				if not encode:
+					encoder = single_bytes if splitted_name[0] == "single" else multi_bytes
 				attributes = encoder(value, True)
 			# RFC4511 4.6 Modify Operation
 			# If attributes is an empty list it will delete the entire attribute
