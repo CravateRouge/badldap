@@ -13892,7 +13892,7 @@ HRESULT = {
 
 0x80004016: { "code": "CO_E_OLE1DDE_DISABLED", "message":"Use of OLE1 services requiring Dynamic Data Exchange (DDE) Windows is disabled."},
 
-0x80004017: { "code": "CO_E_RUNAS_SYNTAX", "message":"A RunAs specification must be <domain name>\<user name> or simply <user name>."},
+0x80004017: { "code": "CO_E_RUNAS_SYNTAX", "message":"A RunAs specification must be <domain name>\\<user name> or simply <user name>."},
 
 0x80004018: { "code": "CO_E_CREATEPROCESS_FAILURE", "message":"The server process could not be started. The path name might be incorrect."},
 
@@ -14068,7 +14068,7 @@ HRESULT = {
 
 0x8001012B: { "code": "CO_E_NETACCESSAPIFAILED", "message":"Either NetAccessDel or NetAccessAdd returned an error code."},
 
-0x8001012C: { "code": "CO_E_WRONGTRUSTEENAMESYNTAX", "message":"One of the trustee strings provided by the user did not conform to the <Domain>\<Name> syntax and it was not the *\" string\"."},
+0x8001012C: { "code": "CO_E_WRONGTRUSTEENAMESYNTAX", "message":"One of the trustee strings provided by the user did not conform to the <Domain>\\<Name> syntax and it was not the *\" string\"."},
 
 0x8001012D: { "code": "CO_E_INVALIDSID", "message":"One of the security identifiers provided by the user was invalid."},
 
