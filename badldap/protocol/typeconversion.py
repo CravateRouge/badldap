@@ -485,8 +485,8 @@ def encode_changes(x, encode=True):
 						raise TypeError(f"{k} takes only one value but multiple values have been given.")
 					else:
 						value = value[0]
-				# If encoding is disabled then call the "bytes" encoder 
-				if not encode and splitted_name[1] != ["bytes"]:
+				# If encoding is disabled then call the "bytes" encoder if it's not already default for this attribute 
+				if not encode and splitted_name[1:2] != ["bytes"]:
 					if splitted_name[0] == "single":
 						encoder = single_bytes
 					else:
